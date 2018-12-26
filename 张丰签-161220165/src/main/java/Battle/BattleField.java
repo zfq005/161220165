@@ -1,9 +1,8 @@
 package Battle;
 import Beings.*;
-import GUI.*;
+
 import javafx.application.Platform;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Random;
@@ -11,65 +10,118 @@ import java.util.Random;
 public class BattleField {
     private int x_size;
     private int y_size;
-    int[][] battlefield;//战场
-    public BrotherAct brother_act;
-    public Soldier[] soldiers;
-    public Snake snake;
-    public Grandpa grandpa;
-    public Leader leader;
-    public Formation formation;
-    public boolean isEnd=false;
+    private int[][] battlefield;
+
+    private Creature[] creatures;
+    private Brother[] brothers;
+    private Soldier[] soldiers;
+    private Snake snake;
+    private Grandpa grandpa;
+    private Leader leader;
+
+    private boolean isEnd=true;
     private boolean writeReady=false;
-    public boolean isRecord=false;
-    public int formationType=1;
-    public BattleRecord[] records=new BattleRecord[1000];
-    public int recordLength=0;
+    private boolean isRecord=false;
+
+    private Formation formation;
+    private int formationType=1;
+
+    private BattleRecord[] records=new BattleRecord[1000];
+    private int recordLength=0;
 
     public BattleField(){
+        System.out.println("\n初始化战场信息以及生物对象...");
         battlefield=new int[20][12];
         x_size=20;
         y_size=12;
-        brother_act=new BrotherAct();
+        creatures=new Creature[17];
+        brothers=new Brother[7];
+        String[] setBrotherName={"老大","老二","老三","老四","老五","老六","老七"};
         soldiers=new Soldier[7];
-        snake=new Snake();
-        snake.give_life(1);
+
         grandpa=new Grandpa();
-        grandpa.give_life(1);
+        grandpa.setLife(1);
+        creatures[7]=grandpa;
+
         leader=new Leader();
-        leader.give_life(1);
+        leader.setLife(1);
+        creatures[8]=leader;
+
+        snake=new Snake();
+        snake.setLife(1);
+        creatures[9]=snake;
         for(int i = 0; i < 7; i++){
             soldiers[i] = new Soldier(i+11);
-            brother_act.brother[i].give_life(1);
-            soldiers[i].give_life(1);
+            brothers[i]=new Brother(setBrotherName[i],i+1);
+            soldiers[i].setLife(1);
+            brothers[i].setLife(1);
+            creatures[i]=brothers[i];
+            creatures[i+10]=soldiers[i];
         }
+
         for(int i = 0; i < 1000; i++){
             records[i] = new BattleRecord();
         }
+        formation=new Formation(20,12,this);
+        System.out.println("初始化完成");
+    }
+    public Creature getCreature(int num){
+        try {
+            return creatures[num - 1];
+        }catch (IndexOutOfBoundsException e){
+            System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+num);
+            return creatures[0];
+        }
+    }
+    public Formation getFormation(){
+        return formation;
+    }
+    public void setFormation(int num){
+        formationType=num;
+    }
+    public int getFormationType(){
+        return formationType;
+    }
+    public BattleRecord[] getRecord(){
+        return records;
+    }
+    public int getRecordLength(){
+        return recordLength;
+    }
+    public void setRecordLength(int num){
+        recordLength=num;
+    }
+    public boolean getIsEnd(){
+        return this.isEnd;
+    }
+    public boolean getIsRecord(){
+        return this.isRecord;
+    }
+    public void setIsRecord(boolean value){
+        this.isRecord=value;
+    }
+    public void setIsEnd(boolean value){
+        this.isEnd=value;
     }
     public void show_all(){
-        for(int i=0;i<x_size;i++){
+        System.out.println("打印战场信息");
+        for(int i=0;i<x_size;i++) {
             System.out.println();
-            for(int j=0;j<y_size;j++) {
-                if(battlefield[i][j]==0){
+            for (int j = 0; j < y_size; j++) {
+                if (battlefield[i][j] == 0) {
                     System.out.print("0     ");
+                } else {
+                        System.out.print(creatures[battlefield[i][j] - 1].get_name() + "   ");
                 }
-                else if(battlefield[i][j]<=7)
-                    System.out.print(brother_act.brother[battlefield[i][j]-1].get_name()+"   ");
-                else if(battlefield[i][j]<=8)
-                    System.out.print(grandpa.get_name()+"   ");
-                else if(battlefield[i][j]<=9)
-                    System.out.print(leader.get_name()+"   ");
-                else if(battlefield[i][j]<=10)
-                    System.out.print(snake.get_name()+"   ");
-                else if(battlefield[i][j]<=17)
-                    System.out.print(soldiers[battlefield[i][j]-11].get_name()+"   ");
             }
         }
     }
-    public boolean set_one(int x,int y,int num){//设置一个位置给某生物，如果成功返回true
+    public boolean set_one(int x,int y,int num){
             if (x < x_size && y < y_size) {
                 if (battlefield[x][y] == 0) {
                     battlefield[x][y] = num;
+                    System.out.println("初始化移动:");
+                    creatures[num-1].move(x,y);
                     return true;
                 } else
                     return false;
@@ -77,59 +129,78 @@ public class BattleField {
             else
                 return false;
     }
-    public boolean BrotherMove(int num,int x,int y){
-        int next_life=0;
+    private boolean BrotherMove(int num,int x,int y){
+
         int dst=battlefield[x][y];
-        int life=brother_act.brother[num-1].get_life();
-        //System.out.println(dst+"life:"+next_life);
-        if(dst==9)
-            next_life=leader.get_life();
-        else if(dst==10)
-            next_life=snake.get_life();
-        else if(dst>10)
-            next_life=soldiers[dst-11].get_life();
-        else
-            next_life=0;
+        int life=0;
+        int next_life=0;
+        try {
+            life = creatures[num - 1].get_life();
+            if(dst>=9) {
+                next_life = creatures[dst - 1].get_life();
+            }
+        }catch (IndexOutOfBoundsException e){
+            System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+num+" "+dst);
+        }
+
+
+        //修改--Brother移动方式
         if(life>0){
-            if(dst==0){
+            if(x>=x_size-4){
+                int randnum = RandomAttack(num);
+                if(randnum!=0) {
+                    GoodBattle(num, randnum);
+                }
+                return false;
+            }
+            else if(dst==0){
+                battlefield[creatures[num-1].get_x()][creatures[num-1].get_y()]=0;
                 battlefield[x][y]=num;
 
                 records[recordLength].type=1;
                 records[recordLength].src_num=num;
-                records[recordLength].src_x=brother_act.brother[num-1].get_x();
-                records[recordLength].src_y=brother_act.brother[num-1].get_y();
+                records[recordLength].src_x=creatures[num-1].get_x();
+                records[recordLength].src_y=creatures[num-1].get_y();
                 records[recordLength].dst_x=x;
                 records[recordLength].dst_y=y;
                 recordLength++;
 
                 Platform.runLater(() -> {
-                    brother_act.brother[num-1].getImageView().setX(60*x);
-                    brother_act.brother[num-1].getImageView().setY(60*y);
-                    brother_act.brother[num-1].move(x,y);
+                    creatures[num-1].getImageView().setX(60*x);
+                    creatures[num-1].getImageView().setY(60*y);
+                    creatures[num-1].move(x,y);
                 });
 
                 return true;
             }
-            else if(next_life==0){
-                Random random=new Random();
-                int randnum=random.nextInt(9)+9;
-                GoodBattle(num,randnum);
+            else if(dst<=7&&next_life!=0){
+                System.out.println(creatures[num-1].get_name()+"等待前方队友移动");
                 return false;
             }
-            else if(dst>=9){
+            else if(dst==8&&next_life==0){
+                return BrotherMove(num,x,y+1);
+            }
+            else if(next_life==0){
+                if(x>=x_size/2) {
+                    int randnum = RandomAttack(num);
+                    if(randnum!=0) {
+                        GoodBattle(num, randnum);
+                    }
+                }
+                return false;
+            }
+            else{
                 GoodBattle(num,dst);
                 return false;
             }
-            else
-                return false;
 
         }
         else
             return false;
     }
-    public boolean GrandpaMove(int x,int y){
+    private boolean GrandpaMove(int x,int y){
         int dst=battlefield[x][y];
-        int life=grandpa.get_life();
+        int life=creatures[7].get_life();
         if(x>x_size/3&&life!=0) {
             Random random = new Random();
             int randnum = random.nextInt(9) + 9;
@@ -137,23 +208,25 @@ public class BattleField {
             return false;
         }
 
+        //修改--爷爷移动方式
         if(life>0){
             if(dst==0){
+                battlefield[creatures[7].get_x()][creatures[7].get_y()]=0;
                 battlefield[x][y]=8;
                 records[recordLength].type=1;
                 records[recordLength].src_num=8;
-                records[recordLength].src_x=grandpa.get_x();
-                records[recordLength].src_y=grandpa.get_y();
+                records[recordLength].src_x=creatures[7].get_x();
+                records[recordLength].src_y=creatures[7].get_y();
                 records[recordLength].dst_x=x;
                 records[recordLength].dst_y=y;
                 recordLength++;
-                grandpa.getImageView().setX(60*x);
-                grandpa.getImageView().setY(60*y);
-                grandpa.move(x,y);
+                Platform.runLater(() -> {
+                    creatures[7].getImageView().setX(60*x);
+                    creatures[7].getImageView().setY(60*y);
+                    creatures[7].move(x,y);
+                });
                 return true;
             }
-
-
             else if(dst>=9){
                 GoodBattle(8,dst);
                 return false;
@@ -164,36 +237,63 @@ public class BattleField {
         else
             return false;
     }
-    public boolean SoldierMove(int num,int x,int y){
-        int next_life=0;
+    private boolean SoldierMove(int num,int x,int y){
         int dst=battlefield[x][y];
-        if(dst==8){
-            next_life=grandpa.get_life();
+        int life=0;
+        int next_life=0;
+        try {
+            life = creatures[num-1].get_life();
+            if(dst>0&&dst<=8) {
+                next_life = creatures[dst - 1].get_life();
+            }
+        }catch (IndexOutOfBoundsException e){
+            System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+num+" "+dst);
         }
-        else if(dst<=7&&dst>0){
-            next_life=brother_act.brother[dst-1].get_life();
-        }
-        int life=soldiers[num].get_life();
-        if(life>0){
-            if(dst==0){
-                battlefield[x][y]=num+11;
 
-                records[recordLength].type=1;
-                records[recordLength].src_num=num+11;
-                records[recordLength].src_x=soldiers[num].get_x();
-                records[recordLength].src_y=soldiers[num].get_y();
-                records[recordLength].dst_x=x;
-                records[recordLength].dst_y=y;
-                recordLength++;
-                soldiers[num].getImageView().setX(60*x);
-                soldiers[num].getImageView().setY(60*y);
-                soldiers[num].move(x,y);
-                return true;
+
+        //修改--士兵移动方式
+        if(life>0){
+            if(x<x_size/4){
+                int randnum = RandomAttack(num);
+                if(randnum!=0) {
+                    BadBattle(num, randnum);
+                }
+                return false;
+            }
+            if(dst==0){
+                Random random=new Random();
+                int randnum=random.nextInt(100);
+                if(randnum%2==0) {
+                    battlefield[creatures[num - 1].get_x()][creatures[num - 1].get_y()] = 0;
+                    battlefield[x][y] = num;
+
+                    records[recordLength].type = 1;
+                    records[recordLength].src_num = num;
+                    records[recordLength].src_x = creatures[num - 1].get_x();
+                    records[recordLength].src_y = creatures[num - 1].get_y();
+                    records[recordLength].dst_x = x;
+                    records[recordLength].dst_y = y;
+                    recordLength++;
+
+                    Platform.runLater(() -> {
+                        creatures[num - 1].getImageView().setX(60 * x);
+                        creatures[num - 1].getImageView().setY(60 * y);
+                        creatures[num - 1].move(x, y);
+                    });
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else if(dst>8&&next_life!=0){
+                System.out.println(creatures[num-1].get_name()+"等待前方队友移动");
+                return false;
             }
             else if(next_life==0){
-                Random random=new Random();
-                int randnum=random.nextInt(9)+9;
-                BadBattle(num,randnum);
+                int randnum=RandomAttack(num);
+                if(randnum!=0) {
+                    BadBattle(num, randnum);
+                }
                 return false;
             }
             else if(dst<9){
@@ -208,7 +308,7 @@ public class BattleField {
     }
     public boolean move(int x,int y,int to_x,int to_y){
          synchronized (this) {
-             if(to_x>20)
+             if(to_x>=20||to_y>=12)
                  isEnd=true;
              int num = battlefield[x][y];
              //System.out.println(num);
@@ -218,11 +318,11 @@ public class BattleField {
                  } else if (num == 8) {
                      return GrandpaMove(to_x, to_y);
                  } else if (num >= 11) {
-                     return SoldierMove(num - 11, to_x, to_y);
+                     return SoldierMove(num, to_x, to_y);
                  } else {
                      Random random = new Random();
                      int randnum = random.nextInt(8);
-                     BadBattle(num, randnum);
+                     BadBattle(num, randnum%8+1);
                      return false;
                  }
              }
@@ -230,142 +330,99 @@ public class BattleField {
                  return false;
          }
     }
-    private void BadBattle(int src,int dst){
+    private int RandomAttack(int num){
         Random rand = new Random();
-        int randnum = rand.nextInt() % 2;
-        int life=0;
-        if(dst<=7){
-            life= brother_act.brother[dst].get_life();
+        int randnum=0;
+        if(num<=8){
+            randnum=rand.nextInt(100)%9+9;
         }
-        else{
-            life=grandpa.get_life();
+        else
+            randnum=rand.nextInt(100)%8+1;
+        int life=0;
+        try{
+            life=creatures[randnum-1].get_life();
+        }catch(IndexOutOfBoundsException e){
+            System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+randnum);
+        }
+        if(life!=0)
+            return randnum;
+        else
+            return 0;
+    }
+    private void BadBattle(int src,int dst){
+        System.out.println("战斗！ 来自"+creatures[src-1].get_name()+"对"+creatures[dst-1].get_name()+"发起的进攻");
+        Random rand = new Random();
+        int randnum = rand.nextInt(100) %3;
+        if(src==9||src==10){
+            randnum=rand.nextInt(100)%2;
+        }
+        int life=0;
+        try {
+            life=creatures[dst - 1].get_life();
+        }catch (IndexOutOfBoundsException e){
+            System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+dst);
         }
         if(life>0) {
-            if (randnum == 0) {
-                if (src == 9) {
-                    leader.give_life(0);
-                    System.out.println(leader.get_name() + "死亡");
-                    leader.setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=9;
-                    recordLength++;
-                } else if (src == 10) {
-                    snake.give_life(0);
-                    System.out.println(snake.get_name() + "死亡");
-                    snake.setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=10;
-                    recordLength++;
-                } else {
-                    soldiers[src].give_life(0);
-                    System.out.println(soldiers[src].get_name() + "死亡");
-                    soldiers[src].setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=src+11;
-                    recordLength++;
-                }
+            if (randnum!= 0) {
+                creatures[src-1].setLife(0);
+                creatures[src-1].setDieView();;
+                records[recordLength].type=2;
+                records[recordLength].src_num=src;
             } else {
-                if (dst <= 7&&dst>0) {
-                    brother_act.brother[dst-1].give_life(0);
-                    System.out.println(brother_act.brother[dst-1].get_name() + "死亡");
-                    brother_act.brother[dst-1].setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=dst;
-                    recordLength++;
-
-                } else {
-                    grandpa.give_life(0);
-                    System.out.println(grandpa.get_name() + "死亡");
-                    grandpa.setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=8;
-                    recordLength++;
-                }
+                creatures[dst-1].setLife(0);
+                creatures[dst-1].setDieView();;
+                records[recordLength].type=2;
+                records[recordLength].src_num=dst;
             }
         }
        set_end();
     }
     private void GoodBattle(int src,int dst){
+        System.out.println("战斗！ 来自"+creatures[src-1].get_name()+"对"+creatures[dst-1].get_name()+"发起的进攻");
         Random rand = new Random();
-        int randnum = rand.nextInt(100) % 2;
+        int randnum = rand.nextInt(100) % 3;
         int life=0;
-        if(dst==9)
-            life=leader.get_life();
-        else if(dst==10)
-            life=snake.get_life();
-        else
-            life=soldiers[dst-11].get_life();
+        try {
+            life=creatures[dst - 1].get_life();
+        }catch (IndexOutOfBoundsException e){
+            System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+dst);
+        }
         if(life>0){
             if(randnum==0){
-                if(src==8){
-                    grandpa.give_life(0);
-                    System.out.println(grandpa.get_name() + "死亡");
-                    grandpa.setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=8;
-                    recordLength++;
-                }
-                else{
-                    brother_act.brother[src-1].give_life(0);
-                    System.out.println(brother_act.brother[src-1].get_name() + "死亡");
-                    brother_act.brother[src-1].setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=src;
-                    recordLength++;
-                }
+                creatures[src-1].setLife(0);
+                creatures[src-1].setDieView();;
+                records[recordLength].type=2;
+                records[recordLength].src_num=src;
             }
             else {
-                if (dst == 9) {
-                    leader.give_life(0);
-                    System.out.println(leader.get_name() + "死亡");
-                    leader.setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=9;
-                    recordLength++;
-                }
-                else if (dst == 10) {
-                    snake.give_life(0);
-                    System.out.println(snake.get_name() + "死亡");
-                    snake.setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=10;
-                    recordLength++;
-                 }
-                 else {
-                    soldiers[dst - 11].give_life(0);
-                    System.out.println(soldiers[dst - 11].get_name() + "死亡");
-                    soldiers[dst-11].setDieView();
-                    records[recordLength].type=2;
-                    records[recordLength].src_num=dst;
-                    recordLength++;
-                }
+                creatures[dst-1].setLife(0);
+                creatures[dst-1].setDieView();
+                records[recordLength].type=2;
+                records[recordLength].src_num=dst;
             }
         }
        set_end();
     }
-    public void set_end(){
+    private void set_end(){
         synchronized (this) {
-            if (snake.get_life() == 0 && leader.get_life() == 0) {
-                boolean temp_flag = true;
-                for (int i = 0; i < 7; i++) {
-                    if (soldiers[i].get_life() > 0)
-                        temp_flag = false;
-                }
-                if (temp_flag) {
-                    isEnd = true;
-                    System.out.println("end with good win");
-                }
+            //System.out.println("判断");
+            boolean badWin=true;
+            boolean goodWin=true;
+            for(int i=0;i<8;i++){
+                if(creatures[i].get_life()!=0)
+                    badWin=false;
             }
-            if (grandpa.get_life() == 0) {
-                boolean temp_flag = true;
-                for (int i = 0; i < 7; i++) {
-                    if (brother_act.brother[i].get_life()>0)
-                        temp_flag = false;
-                }
-                if (temp_flag) {
-                    isEnd = true;
-                    System.out.println("end with bad win");
-                }
+            for(int i=8;i<17;i++){
+                if(creatures[i].get_life()!=0)
+                    goodWin=false;
+            }
+            if(goodWin) {
+                //System.out.println("Good Win");
+                isEnd = true;
+            }
+            if(badWin){
+              //  System.out.println("Bad Win");
+                isEnd = true;
             }
             try {
                 writerecord();
@@ -375,41 +432,33 @@ public class BattleField {
 
         }
     }
-    public void tellAll(){
+    public void initFormation(){
         for(int i=0;i<x_size;i++){
             for(int j=0;j<y_size;j++) {
                 if(battlefield[i][j]==0){
                     ;
                 }
-                else if(battlefield[i][j]<=7)
-                    brother_act.brother[battlefield[i][j]-1].move(i,j);
-                else if(battlefield[i][j]<=8)
-                    grandpa.move(i,j);
-                else if(battlefield[i][j]<=9)
-                    leader.move(i,j);
-                else if(battlefield[i][j]<=10)
-                    snake.move(i,j);
-                else if(battlefield[i][j]<=17)
-                    soldiers[battlefield[i][j]-11].move(i,j);
+                else {
+                    try {
+                        creatures[battlefield[i][j] - 1].move(i, j);
+                    }catch (IndexOutOfBoundsException e){
+                        System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+battlefield[i][j]);
+                    }
+                }
             }
         }
     }
     public void setImage(){
-        for(int i=0;i<7;i++){
-            brother_act.brother[i].setImageView();
-            System.out.println("brother and soldiers index:"+i);
-            soldiers[i].setImageView();
+        for(int i=0;i<17;i++){
+            try {
+                creatures[i].setImageView();
+            }catch (IndexOutOfBoundsException e){
+                System.out.println("数组越界:"+Thread.currentThread().getStackTrace()[1].getMethodName()+" 下标："+i);
+            }
         }
-        grandpa.setImageView();
-        snake.setImageView();
-        leader.setImageView();
     }
     public void writerecord()throws IOException {
         if(isEnd) {
-            /*System.out.println("Record:");
-            for (int i = 0; i < recordLength; i++) {
-                System.out.println(records[i].type + " " + records[i].src_num + " ");
-            }*/
             if(!writeReady){
                 System.out.println("write begin");
                     String file = "record.txt";
@@ -430,57 +479,28 @@ public class BattleField {
         }
         else {
             if (records[i].type == 1) {
-                if (records[i].src_num <= 7) {
-                    brother_act.brother[records[i].src_num-1].move(records[i].dst_x,records[i].dst_y);
-                    brother_act.brother[records[i].src_num - 1].getImageView().setX(60 * records[i].dst_x);
-                    brother_act.brother[records[i].src_num - 1].getImageView().setY(60 * records[i].dst_y);
-                    System.out.println("Brother:" + brother_act.brother[records[i].src_num - 1].get_name() + "move:"
-                            + brother_act.brother[records[i].src_num - 1].get_x() + "," + brother_act.brother[records[i].src_num - 1].get_y());
-                } else if (records[i].src_num == 8) {
-                    grandpa.move(records[i].dst_x,records[i].dst_y);
-                    grandpa.getImageView().setX(60 * records[i].dst_x);
-                    grandpa.getImageView().setY(60 * records[i].dst_y);
-                    System.out.println("Grandpa:" + grandpa.get_name() + "move:" + grandpa.get_x() + "," + grandpa.get_y());
-                } else if (records[i].src_num <= 10) {
-                    ;
-                } else {
-                    soldiers[records[i].src_num-11].move(records[i].dst_x,records[i].dst_y);
-                    soldiers[records[i].src_num - 11].getImageView().setX(60 * records[i].dst_x);
-                    soldiers[records[i].src_num - 11].getImageView().setY(60 * records[i].dst_y);
-                    System.out.println("Soldier:" + soldiers[records[i].src_num - 11].get_name() + "move:"
-                            + soldiers[records[i].src_num - 11].get_x() + "," + soldiers[records[i].src_num - 11].get_y());
-                }
+                creatures[records[i].src_num-1].move(records[i].dst_x,records[i].dst_y);
+                creatures[records[i].src_num-1].getImageView().setX(60*records[i].dst_x);
+                creatures[records[i].src_num-1].getImageView().setY(60*records[i].dst_y);
             } else if (records[i].type == 2) {
                 if (records[i].src_num <= 7) {
-                    brother_act.brother[records[i].src_num - 1].imageView.setImage(BeingsImage.BrotherDie.getImage());
-                    System.out.println(brother_act.brother[records[i].src_num - 1].get_name() + "死亡");
+                    brothers[records[i].src_num - 1].getImageView().setImage(BeingsImage.BrotherDie.getImage());
                 } else if (records[i].src_num == 8) {
-                    grandpa.imageView.setImage(BeingsImage.GrandpaDie.getImage());
-                    System.out.println(grandpa.get_name() + "死亡");
+                    grandpa.getImageView().setImage(BeingsImage.GrandpaDie.getImage());
                 } else if (records[i].src_num == 9) {
-                    leader.imageView.setImage(BeingsImage.LeaderDie.getImage());
-                    System.out.println(leader.get_name() + "死亡");
+                    leader.getImageView().setImage(BeingsImage.LeaderDie.getImage());
                 } else if (records[i].src_num == 10) {
-                    snake.imageView.setImage(BeingsImage.SnakeDie.getImage());
-                    System.out.println(snake.get_name() + "死亡");
+                    snake.getImageView().setImage(BeingsImage.SnakeDie.getImage());
                 } else {
-                    soldiers[records[i].src_num - 11].imageView.setImage(BeingsImage.SoldierDie.getImage());
-                    System.out.println(soldiers[records[i].src_num - 11].get_name() + "死亡");
+                    soldiers[records[i].src_num - 11].getImageView().setImage(BeingsImage.SoldierDie.getImage());
                 }
-            /*
-            try{
-                Thread.sleep(100);
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
-            */
             }
         }
     }
     public static void main(String[] args) {
        BattleField x=new BattleField();
-       x.formation=new Formation(20,12,x);
-       x.formation.change_formation(4);
+       /*x.formation=new Formation(20,12,x);
+       x.formation.change_formation(4);*/
     }
 
 }

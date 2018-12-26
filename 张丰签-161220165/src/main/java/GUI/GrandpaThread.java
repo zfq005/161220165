@@ -1,11 +1,10 @@
 package GUI;
 import Beings.*;
 import Battle.*;
-import java.util.concurrent.*;
 public class GrandpaThread implements Runnable{
     BattleField battleField;
-    Grandpa grandpa;
-    public GrandpaThread(Grandpa grandpa,BattleField battleField){
+    Creature grandpa;
+    public GrandpaThread(Creature grandpa,BattleField battleField){
         System.out.println("Init GrandpaThread:"+grandpa.get_name());
         this.grandpa=grandpa;
         this.battleField=battleField;
@@ -19,8 +18,8 @@ public class GrandpaThread implements Runnable{
 
     }
     public void run(){
-        if(!battleField.isRecord) {
-            while (!battleField.isEnd) {
+        if(!battleField.getIsRecord()) {
+            while (!battleField.getIsEnd()) {
                 try {
                     try {
                         //battleField.set_end();
@@ -31,9 +30,7 @@ public class GrandpaThread implements Runnable{
                     boolean moveres = moveForward();
                     //
                     if (moveres) {
-                        System.out.println("Grandpa:" + grandpa.get_name() + "move:" + grandpa.get_x() + "," + grandpa.get_y());
 
-                        //grandpa.move(grandpa.get_x()+1,grandpa.get_y());
                     }
                 } catch (Exception e) {
 

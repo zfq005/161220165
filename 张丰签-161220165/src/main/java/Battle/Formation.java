@@ -122,7 +122,7 @@ public class Formation {
         battleField.set_one(x_size-5,y_size/2+3,15);
         battleField.set_one(x_size-3,y_size/2-2,16);
         battleField.set_one(x_size-5,y_size/2-3,17);
-        battleField.show_all();
+       // battleField.show_all();
     }
     public void change_formation(int num){
         switch (num){

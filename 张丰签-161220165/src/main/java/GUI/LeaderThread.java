@@ -1,11 +1,10 @@
 package GUI;
 import Beings.*;
 import Battle.*;
-import java.util.concurrent.*;
 public class LeaderThread implements Runnable{
     BattleField battleField;
-    Leader leader;
-    public LeaderThread(Leader leader,BattleField battleField){
+    Creature leader;
+    public LeaderThread(Creature leader,BattleField battleField){
         System.out.println("Init LeaderThread:"+leader.get_name());
         this.leader=leader;
         this.battleField=battleField;
@@ -19,8 +18,8 @@ public class LeaderThread implements Runnable{
 
     }
     public void run(){
-        if(!battleField.isRecord) {
-            while (!battleField.isEnd) {
+        if(!battleField.getIsRecord()) {
+            while (!battleField.getIsEnd()) {
                 try {
                     try {
                         //battleField.set_end();
@@ -31,9 +30,6 @@ public class LeaderThread implements Runnable{
                     boolean moveres = moveForward();
                     //
                     if (moveres) {
-                        System.out.println("Leader:" + leader.get_name() + "move:" + leader.get_x() + "," + leader.get_y());
-
-                        //leader.move(leader.get_x()-1,leader.get_y());
                     }
                 } catch (Exception e) {
 

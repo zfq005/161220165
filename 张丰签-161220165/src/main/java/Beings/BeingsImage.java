@@ -8,19 +8,15 @@ public enum BeingsImage {
     Leader_one("/xiezijing.jpg"),Soldier_one("/xiezi.jpg"),Grandpa_one("/grandpa.jpg"),
     BrotherDie("/Brother_die.jpg"),GrandpaDie("/grandpa_die.jpg"),SoldierDie("/xiezi_die.jpg"),
     SnakeDie("/snake_die.jpg"),LeaderDie("/xiezijing_die.jpg");
+
     private final String imageURL;
     private final Image image;
+
     BeingsImage(String imageURL) {
         this.imageURL = imageURL;
         this.image = new Image(this.getClass().getResource(imageURL).toString());
     }
-
     public Image getImage(){
-      //  System.out.println(image);
         return image;
     }
-    public int test(){
-        return -1;
-    }
-
 }

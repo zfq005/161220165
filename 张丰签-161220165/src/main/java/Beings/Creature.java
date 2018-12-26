@@ -1,23 +1,17 @@
 package Beings;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 public class Creature {
     protected int life=0;
-    protected Boolean party=true;
+    protected int party=1;//1 for good 2 for bad
     protected int number;
     protected String name;
     protected int x;
     protected int y;
-    public ImageView imageView;
+    protected ImageView imageView;
     public Creature(int start_x,int start_y,int num,String name){
         this.x=start_x;
         this.y=start_y;
-        this.number=num;
-        this.name=name;
-    }
-    public Creature(int num,String name){
-        this.x=0;
-        this.y=0;
         this.number=num;
         this.name=name;
     }
@@ -26,7 +20,6 @@ public class Creature {
         this.number=0;
     }
     public void setImageView(){
-       // System.out.println("set image view:"+number);
         switch(number){
             case 1: this.imageView = new ImageView(BeingsImage.Brother1.getImage());break;
             case 2: this.imageView = new ImageView(BeingsImage.Brother2.getImage());break;
@@ -61,11 +54,12 @@ public class Creature {
             imageView.setFitHeight(59);
             imageView.setFitWidth(59);
         }
+        System.out.println(this.name+" 在("+x+","+y+")死亡");
     }
     public ImageView getImageView(){
         return imageView;
     }
-    public void give_life(int n){
+    public void setLife(int n){
         this.life=n;
     }
     public int get_x(){
@@ -77,20 +71,22 @@ public class Creature {
     public String get_name(){
         return this.name;
     }
-    public int get_number(){
-        return this.number;
-    }
-    public void show_pos(){
-        System.out.println("("+x+","+y+")");
-    }
+    public int get_life(){ return this.life;}
     public void move(int to_x,int to_y){//生物移动
-        //System.out.println("("+x+","+y+") -> ("+to_x+","+to_y+")");
-        if(to_x<20&&to_y<12) {
-            x = to_x;
-            y = to_y;
+        try{
+            if(to_x<0||to_y<0||to_x>=20||to_y>=12){
+                throw new Exception();
+            }
+            else{
+                System.out.println(this.name+" 移动：("+x+","+y+") 至 ("+to_x+","+to_y+")");
+                x=to_x;y=to_y;
+            }
+        }catch (Exception e){
+            System.out.println("移动过程中，数组越界");
+            return;
         }
-        //System.out.println(this.name+":"+this.x+","+this.y);
     }
-    public int get_life(){ return life;}
-    public Boolean get_party(){return party;}
+    public int get_party(){
+        return this.party;
+    }
 }

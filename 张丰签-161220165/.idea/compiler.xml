@@ -6,7 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="hlw_fx" />
+        <module name="161220165-张丰签" />
       </profile>
     </annotationProcessing>
   </component>

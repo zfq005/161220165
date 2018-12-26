@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.net.URL;
 import javafx.scene.*;
 
-import javax.imageio.IIOException;
 
 public class Main extends Application {
     private Controller controller;

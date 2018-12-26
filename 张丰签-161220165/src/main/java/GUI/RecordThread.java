@@ -8,7 +8,7 @@ public class RecordThread implements Runnable {
         this.battleField=x;
     }
     public void run(){
-        while(!battleField.isEnd){
+        while(!battleField.getIsEnd()){
             try{
                 battleField.RecordPlay(i);
                 i++;
