@@ -2,7 +2,8 @@
 ### 一、文件结构
 1. Battle文件夹
    
-   ① BattleField.java 主战场文件，包含各个生物的对象
+   ① BattleField.java
+   ② BattleRecord.java
 2. Beings文件夹
 3. GUI文件夹   
 4. Controller.java   
