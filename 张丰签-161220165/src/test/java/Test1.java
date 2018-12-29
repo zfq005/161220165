@@ -24,7 +24,7 @@ public class Test1 {
             x.show_all();
         }
     }
-    @Test
+
     public void readRecord(){
         BattleField x=new BattleField();
         Controller controller=new Controller();

@@ -65,8 +65,8 @@ public class Controller {
         if(!x.getIsRecord()) {
             Random rand = new Random();
             int randnum = rand.nextInt(100) % 4;
-            x.getFormation().change_formation(randnum + 1);
-            x.setFormation(randnum+1);
+            x.getFormation().change_formation( 1);
+            x.setFormation(1);
         }else{
             x.getFormation().change_formation(x.getFormationType());
         }
