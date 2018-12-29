@@ -44,6 +44,10 @@
 
 ### 二、实现思路
 
+生物表示：
+   
+![Image](https://github.com/zfq005/zfq/raw/master/1.png)
+
 ### 三、Battle文件夹内代码介绍
 
 ### 四、Beings文件夹内代码介绍
