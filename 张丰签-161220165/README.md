@@ -18,7 +18,7 @@
    Soldier.java
       
 
-   2.Battle
+ 2.Battle
    
    BattleField.java
       
@@ -27,7 +27,7 @@
    Formation.java
       
 
-   3.GUI
+ 3.GUI
    
    BrotherThread.java
       
@@ -42,9 +42,9 @@
    SoldierThread.java
       
    
-   Controller.java
+ Controller.java
    
-   Main.java
+ Main.java
    
 
 ### 二、实现思路
