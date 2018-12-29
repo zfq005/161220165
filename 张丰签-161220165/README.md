@@ -3,6 +3,7 @@
 1. Battle文件夹
    
    ① BattleField.java
+   
    ② BattleRecord.java
 2. Beings文件夹
 3. GUI文件夹   
