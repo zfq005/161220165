@@ -104,20 +104,26 @@
     
 //方法：
     public BattleField();
+    //初始化战场以及对生物对象初始化
     
     public Creature getCreature(int num);
+    //对外接口，根据num的值获得对应的生物
     
     public Formation getFormation();
+    //对外接口，获得阵型的对象
     
     public void setFormation(int num);
+    //对外接口，设置阵型，num的取值范围为1-4，修改formationType
     
     public int getFormationType();
+    //对外接口，获得formationType的值
     
     public BattleRecord[] getRecord();
     
     public int getRecordLength();
     
     public void setRecordLength(int num);
+    //这几个均是对外进行记录信息操作的方法
     
     public boolean getIsEnd();
     
@@ -126,34 +132,45 @@
     public void setIsRecord(boolean value);
     
     public void setIsEnd(boolean value);
+    //获得或设置战斗标志
     
     public void show_all();
+    //打印阵型，主要用于test阵型是否设置好
     
     public boolean set_one(int x,int y,int num);
+    //在Formation中调用，设置(x,y)的坐标为生物编号为num的生物，进行了数组越界的异常处理，以及该位置是否有生物的判断
     
     private boolean BrotherMove(int num,int x,int y);
     
     private boolean GrandpaMove(int x,int y);
     
     private boolean SoldierMove(int num,int x,int y);
+    //几个生物的移动，以及移动产生的结果：是否移动成功、是否发生战斗
     
     public boolean move(int x,int y,int to_x,int to_y);
+    //对外函数，将(x,y)位置上的生物移动到(to_x,to_y)，根据生物类型调用上述生物的移动函数，同时写记录
     
     private int RandomAttack(int num);
+    //随机数，根据num随机产生攻击对象
     
     private void BadBattle(int src,int dst);
     
     private void GoodBattle(int src,int dst);
+    //好坏阵营的战斗，战斗胜负随机产生，但概率不同
     
     private void set_end();
+    //每次战斗结束调用该函数，判断整场战斗是否结束
     
     public void initFormation();
     
     public void setImage();
+    //调用初始化生物的图形的函数
     
     public void writerecord();
+    //写记录
     
     public void RecordPlay(int i);
+    //回放
     
 
 ```
