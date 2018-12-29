@@ -25,7 +25,21 @@
    ⑦ Soldier.java
    
 3. GUI文件夹   
+   
+   ① BrotherThread.java
+   
+   ② GrandpaThread.java
+   
+   ③ LeaderThread.java
+   
+   ④ RecordThread.java
+   
+   ⑤ SnakeThread.java
+   
+   ⑥ SoldierThread.java
+   
 4. Controller.java   
+
 5. Main.java
 
 ### 二、实现思路
