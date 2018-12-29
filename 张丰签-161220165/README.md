@@ -5,7 +5,25 @@
    ① BattleField.java
    
    ② BattleRecord.java
+   
+   ③ Formation.java
+   
 2. Beings文件夹
+   
+   ① BeingsImage.java
+   
+   ② Brother.java
+   
+   ③ Creature.java
+   
+   ④ Grandpa.java
+   
+   ⑤ Leader.java
+   
+   ⑥ Snake.java
+   
+   ⑦ Soldier.java
+   
 3. GUI文件夹   
 4. Controller.java   
 5. Main.java
