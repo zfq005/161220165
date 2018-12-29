@@ -175,6 +175,42 @@
 
 ```
 
+##### BattleRecord.java
+
+```
+
+public class BattleRecord {
+    public int type;
+    public int src_num;
+    public int src_x;
+    public int src_y;
+    public int dst_x;
+    public int dst_y;
+}
+/*
+用于记录战斗信息，type为类型，1为移动信息，2为战斗信息；
+src_num为发起该动作的生物；
+(src_x,src_y)为当前位置；
+(dst_x,dst_y)为目标位置；
+该记录只记录死亡对象，和死亡地点
+*/
+```
+
+##### Formation.java
+
+```
+    public void change_formation(int num){
+        switch (num){
+            case 1:formation1();break;
+            case 2:formation2();break;
+            case 3:formation3();break;
+            case 4:formation4();break;
+            default:break;
+        }
+    }
+    //主要利用这个函数调用不同的设置阵型的函数
+```
+
 ### 四、Beings文件夹内代码介绍
 
 ### 五、GUI文件夹内代码介绍
