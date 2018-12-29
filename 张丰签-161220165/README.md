@@ -213,9 +213,99 @@ src_num为发起该动作的生物；
 
 ### 四、Beings文件夹内代码介绍
 
+##### BeingsImage.java
+
+```
+public enum BeingsImage {
+    Brother1("/Red_1.jpg"), Brother2("/Orange_2.jpg"), Brother3("/Yellow_3.jpg"),Brother4("/Green_4.jpg"),
+    Brother5("/Gray_5.jpg"),Brother6("/Blue_6.jpg"),Brother7("/purple_7.jpg"),Snake_one("/snake.jpg"),
+    Leader_one("/xiezijing.jpg"),Soldier_one("/xiezi.jpg"),Grandpa_one("/grandpa.jpg"),
+    BrotherDie("/Brother_die.jpg"),GrandpaDie("/grandpa_die.jpg"),SoldierDie("/xiezi_die.jpg"),
+    SnakeDie("/snake_die.jpg"),LeaderDie("/xiezijing_die.jpg");
+
+    private final String imageURL;
+    private final Image image;
+
+    BeingsImage(String imageURL) {
+        this.imageURL = imageURL;
+        this.image = new Image(this.getClass().getResource(imageURL).toString());
+    }
+    public Image getImage(){
+        return image;
+    }
+}
+//枚举类型，将图片导入进来
+```
+###### Creature.java
+
+```
+//储存生物的信息：
+    protected int life=0;
+    protected int party=1;//1 for good 2 for bad
+    protected int number;
+    protected String name;
+    protected int x;
+    protected int y;
+    protected ImageView imageView;
+//对外的主要接口：
+    public void setImageView()；
+    //获得生物活着的Image，赋值给imageView
+    public void setDieView()；
+    //获得生物死了的Image，赋值给imageView
+    public void move(int to_x,int to_y)；
+    //move操作，修改生物的位置信息(x,y)
+    
+```
+
+
 ### 五、GUI文件夹内代码介绍
+
+##### Brother.java
+其他类基本类似
+
+```
+public class BrotherThread  implements Runnable{
+    BattleField battleField;
+    Creature brother;
+    public BrotherThread(Creature brother,BattleField battleField){
+        System.out.println("Init BrotherThread:"+brother.get_name());
+        this.brother=brother;
+        this.battleField=battleField;
+    }
+    private boolean moveForward(){//如果生物还活着，就去尝试move
+        if(brother.get_life()==0)
+            return false;
+        boolean a=this.battleField.move(brother.get_x(),brother.get_y(),brother.get_x()+1,brother.get_y());
+        return a;
+    }
+    public void run(){//实现run的接口
+        if(!battleField.getIsRecord()) {
+            while (!battleField.getIsEnd()) {//如果没有结束，就去尝试move
+                try {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    moveForward();
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
+}
+```
 
 ### 六、图形界面代码介绍
 
+##### Main.java
+
+主要实现键盘操作，以及图形界面的输出化，以及整个项目的开始接口。
+
+##### Controller.java
+
+根据键盘输入情况，对BattleField的对象实例化，并初始化图像信息，设置各种标志，进行战斗。
+
 ### 七、效果显示
 
+![Image](https://github.com/zfq005/Final-Project/raw/master/%E5%BC%A0%E4%B8%B0%E7%AD%BE-161220165/TestBattle.gif)
