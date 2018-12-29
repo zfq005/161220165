@@ -72,6 +72,92 @@
 
 ### 三、Battle文件夹内代码介绍
 
+##### BattleField.java
+
+```
+//对象及变量：
+    private int x_size; 
+    private int y_size;
+    private int[][] battlefield;
+    //表示战场的二维数组以及战场大小信息
+
+    private Creature[] creatures;
+    private Brother[] brothers;
+    private Soldier[] soldiers;
+    private Snake snake;
+    private Grandpa grandpa;
+    private Leader leader;
+    //各种生物对象，主要用creatures进行各种操作
+
+    private boolean isEnd=true;       //战斗是否结束
+    private boolean writeReady=false; //是否准备好写记录
+    private boolean isRecord=false;   //是否是回放战斗
+    //判断战斗的几个标志
+
+    private Formation formation;
+    private int formationType=1;
+    //阵型信息
+    
+    private BattleRecord[] records=new BattleRecord[1000];
+    private int recordLength=0;
+    //记录信息
+    
+//方法：
+    public BattleField();
+    
+    public Creature getCreature(int num);
+    
+    public Formation getFormation();
+    
+    public void setFormation(int num);
+    
+    public int getFormationType();
+    
+    public BattleRecord[] getRecord();
+    
+    public int getRecordLength();
+    
+    public void setRecordLength(int num);
+    
+    public boolean getIsEnd();
+    
+    public boolean getIsRecord();
+    
+    public void setIsRecord(boolean value);
+    
+    public void setIsEnd(boolean value);
+    
+    public void show_all();
+    
+    public boolean set_one(int x,int y,int num);
+    
+    private boolean BrotherMove(int num,int x,int y);
+    
+    private boolean GrandpaMove(int x,int y);
+    
+    private boolean SoldierMove(int num,int x,int y);
+    
+    public boolean move(int x,int y,int to_x,int to_y);
+    
+    private int RandomAttack(int num);
+    
+    private void BadBattle(int src,int dst);
+    
+    private void GoodBattle(int src,int dst);
+    
+    private void set_end();
+    
+    public void initFormation();
+    
+    public void setImage();
+    
+    public void writerecord();
+    
+    public void RecordPlay(int i);
+    
+
+```
+
 ### 四、Beings文件夹内代码介绍
 
 ### 五、GUI文件夹内代码介绍
