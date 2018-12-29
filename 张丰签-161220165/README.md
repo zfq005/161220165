@@ -1,6 +1,6 @@
 # 葫芦娃大作业
 ### 一、文件结构
-1. Battle文件夹
+###### 1. Battle文件夹
    
    ① BattleField.java
    
@@ -8,7 +8,7 @@
    
    ③ Formation.java
    
-2. Beings文件夹
+###### 2. Beings文件夹
    
    ① BeingsImage.java
    
@@ -24,7 +24,7 @@
    
    ⑦ Soldier.java
    
-3. GUI文件夹   
+##### 3. GUI文件夹   
    
    ① BrotherThread.java
    
@@ -44,13 +44,13 @@
 
 ### 二、实现思路
 
-生物表示：
+###### 生物表示：
    
 ![Image](https://github.com/zfq005/zfq/raw/master/1.png)
 
 所有子类均继承自Creature，在Creature中实现对外的具体接口
 
-战场表示：
+##### 战场表示：
 
 由一个int类型的二维数组表示战场，每个生物有自己独特的ID(Creature类中的int变量number)，用0代表该位置为空，其他特有的ID表示该位置站着哪个生物。
    
